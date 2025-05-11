@@ -1,0 +1,27 @@
+// Ensure the body and html take full height
+body, html {
+    height: 100%;
+    margin: 0;
+}
+
+// Make sure the main content has enough space so that it doesn't overlap the footer
+.main-content {
+    min-height: calc(100vh - 60px); // Ensures content area is not hidden behind the footer
+    padding-bottom: 80px;  // Add some space to account for the fixed footer
+}
+
+footer {
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding: 1px 0;
+    background-color: #343a40;  
+    color: white;  
+    text-align: center;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+}
+
+footer p {
+    margin: 0;
+}

@@ -1,0 +1,73 @@
+const API_URL = 'http://localhost:8080/api/v1';
+
+const getAuthHeaders = (accessToken) => ({
+    'Content-Type': 'application/json',
+    ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+});
+
+const fetchRequest = async (url, options = {}, accessToken) => {
+    try {
+        const response = await fetch(`${API_URL}${url}`, {
+            ...options,
+            headers: { ...getAuthHeaders(accessToken), ...options.headers },
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Klaida iš API:', errorData);
+            throw new Error(errorData.message || 'Nenurodyta klaida');
+        }
+        return await response.json();
+    } catch (error) {
+        throw error;
+    }
+};
+
+// Gauna filmų sąrašą +
+export const getMovies = async (accessToken, queryParams = {}) => {
+    const { id, fields, filter } = queryParams;
+    const searchParams = new URLSearchParams();
+
+    if (id) searchParams.append('id', id);
+    if (fields) searchParams.append('fields', fields);
+    if (filter) searchParams.append('filter', filter);
+
+    const url = `/movies${searchParams.toString() ? `?${searchParams}` : ''}`;
+
+    try {
+        const res = await fetchRequest(url, { method: 'GET' }, accessToken);
+        console.log('Response from getMovies:', res); // Log the full response for debugging
+
+        // Access the movie data directly from the 'data' property
+        if (res && res.data && Array.isArray(res.data)) {
+            return res.data; // Return the movies array directly
+        } else {
+            console.error('Movies data is not available or malformed');
+            return []; // Return an empty array if no valid movie data is found
+        }
+    } catch (error) {
+        console.error('Error fetching movies:', error);
+        return []; // Return empty array in case of an error
+    }
+};
+
+
+// Gauna konkursą pagal ID ???
+export const getMovieById = async (id, accessToken) => {
+    return fetchRequest(`/movies/${id}`, { method: 'GET' }, accessToken);
+};
+
+// Sukuria naują konkursą +
+export const createMovie = async (movieData, accessToken) => {
+    return fetchRequest('/movies', { method: 'POST', body: JSON.stringify(movieData) }, accessToken);
+};
+
+// Atnaujina konkursą +
+export const updateMovie = async (id, movieData, accessToken) => {
+    return fetchRequest(`/movies/${id}`, { method: 'POST', body: JSON.stringify(movieData) }, accessToken);
+};
+
+// Ištrina konkursą +
+export const deleteMovie = async (id, accessToken) => {
+    const response = await fetchRequest(`/movies/${id}`, { method: 'DELETE' }, accessToken);
+    return response.movie || null;
+};
