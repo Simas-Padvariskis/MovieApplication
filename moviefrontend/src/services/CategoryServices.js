@@ -22,7 +22,7 @@ const fetchRequest = async (url, options = {}, accessToken) => {
     }
 };
 
-// Gauna filmų sąrašą +
+// Gauna kategorijų sąrašą +
 export const getCategories = async (accessToken, queryParams = {}) => {
     const { id, fields, filter } = queryParams;
     const searchParams = new URLSearchParams();

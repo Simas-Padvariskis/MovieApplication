@@ -73,6 +73,18 @@ function Dashboard() {
               <div className="col">
                 <div className="card h-100">
                   <div className="card-body">
+                  <h5 className="card-title">Kategorijų sąrašas</h5>
+                    <p className="card-text">Peržiūrėkite visas kategorijas.</p>
+                    <Link to="/categories" className="btn btn-primary">
+                      Žiūrėti sąrašą
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col">
+                <div className="card h-100">
+                  <div className="card-body">
                     <h5 className="card-title">Atsiliepimai</h5>
                     <p className="card-text">Stebėkit atsliepimus.</p>
                     <Link to="/reviews" className="btn btn-primary">

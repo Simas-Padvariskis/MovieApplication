@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useMovies } from '../context/MovieContext';
+import { useCategories } from '../context/CategoryContext';
 import { useLoading } from '../context/LoadingContext';
-import MovieDetails from '../components/MovieDetails';
+import CategoryDetails from '../components/CategoryDetails';
 
-function Movies() {
+function Categories() {
     const { accessToken, logout } = useAuth();
-    const { getMovies } = useMovies();
+    const { getCategories } = useCategories();
     const { setLoading } = useLoading();
     const navigate = useNavigate();
-    const [movies, setMovies] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const [modal, setModal] = useState({ type: null, data: null });
@@ -20,14 +20,14 @@ function Movies() {
     };
 
     useEffect(() => {
-        document.title = 'Movie Application - Filmų sąrašas';
+        document.title = 'Movie Application - Kategorijų sąrašas';
 
         const token = localStorage.getItem('jwtToken');  // Fallback to localStorage
 
         if (!token) {
             navigate('/login');
         } else {
-            fetchMovies();
+            fetchCategories();
         }
     }, [navigate]);
 
@@ -41,13 +41,13 @@ function Movies() {
         }
     }, [success]);
 
-    const fetchMovies = async () => {
+    const fetchCategories = async () => {
         setLoading(true);
         setError(null);
         try {
-            const data = await getMovies();
-            console.log('Movies data:', data); // Log the response
-            setMovies(Array.isArray(data) ? data : []); // Make sure it's always an array
+            const data = await getCategories();
+            console.log('Categories data:', data); // Log the response
+            setCategories(Array.isArray(data) ? data : []); // Make sure it's always an array
         } catch (err) {
             setError(`Klaida: ${err.message}`);
         } finally {
@@ -69,14 +69,14 @@ function Movies() {
             <div className="dashboard-wrapper">
                 <nav className="sidebar">
                     <div className="sidebar-header">
-                        <h4 className="text-white">Filmų sąrašas</h4>
+                        <h4 className="text-white">Kategorijų sąrašas</h4>
                     </div>
                     <ul className="nav flex-column">
                         <li className="nav-item">
                             <Link to="/dashboard" className="nav-link text-white">Grįžti į Dashboard</Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/categories" className="nav-link text-white">Kategorijų sąrašas</Link>
+                            <Link to="/movies" className="nav-link text-white">Filmų sąrašas</Link>
                         </li>
                         <li className="nav-item">
                             <button onClick={handleLogout} className="nav-link text-white w-100 text-start">Atsijungti</button>
@@ -87,20 +87,20 @@ function Movies() {
                 <div className="main-content">
                     <div className="container-fluid p-5">
                         <h1 className="title">Filmų sąrašas</h1>
-                        {/* Safe rendering: Ensure movies is always an array */}
-                        {Array.isArray(movies) && movies.length > 0 ? (
+                        {/* Safe rendering: Ensure categories is always an array */}
+                        {Array.isArray(categories) && categories.length > 0 ? (
                             <div className="row row-cols-1 row-cols-md-2 g-4">
-                                {movies.map((movie) => (
-                                    <MovieDetails
-                                        key={movie.id}
-                                        movie={movie}
+                                {categories.map((category) => (
+                                    <CategoryDetails
+                                        key={category.id}
+                                        category={category}
                                         onEdit={(data) => openModal('update', data)}
                                         onDelete={(data) => openModal('delete', data)}
                                     />
                                 ))}
                             </div>
                         ) : (
-                            <p>Nėra Filmų.</p>
+                            <p>Nėra Kategorijų.</p>
                         )}
                     </div>
                 </div>
@@ -109,4 +109,4 @@ function Movies() {
     );
 }
 
-export default Movies;
+export default Categories;

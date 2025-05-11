@@ -1,6 +1,6 @@
 // CategoryContext.js
 import { createContext, useContext } from 'react';
-import * as categoryServices from '../services/CateogoryServices';
+import * as categoryServices from '../services/CategoryServices';
 import { useAuth } from './AuthContext';
 
 const CategoryContext = createContext();
