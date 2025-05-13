@@ -1,13 +1,15 @@
+import '../styles/home/movies.scss';
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useMovies } from '../context/MovieContext';
+import { deleteMovie } from '../services/MovieServices';
 import { useLoading } from '../context/LoadingContext';
 import MovieDetails from '../components/MovieDetails';
 
 function Movies() {
     const { accessToken, logout } = useAuth();
-    const { getMovies } = useMovies();
+    const { getMovies} = useMovies();
     const { setLoading } = useLoading();
     const navigate = useNavigate();
     const [movies, setMovies] = useState([]);
@@ -52,6 +54,16 @@ function Movies() {
             setError(`Klaida: ${err.message}`);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDeleteMovie = async (movieId) => {
+        try {
+            await deleteMovie(movieId, accessToken);
+            setMovies((prev) => prev.filter((movie) => movie.id !== movieId));
+            setSuccess(true);
+        } catch (err) {
+            setError(`Nepavyko ištrinti filmo: ${err.message}`);
         }
     };
 
@@ -105,6 +117,30 @@ function Movies() {
                     </div>
                 </div>
             </div>
+
+            {/* Modal window for deleting a movie             */}
+            {modal.type === 'delete' && (
+                <div className="modal-backdrop">
+                    <div className="modal-content bg-white p-4 rounded shadow">
+                        <h5>Ar tikrai norite ištrinti filmą „{modal.data.title}“?</h5>
+                        <div className="mt-3 d-flex gap-2">
+                            <button
+                                className="btn btn-danger"
+                                onClick={() => {
+                                    handleDeleteMovie(modal.data.id);
+                                    setModal({ type: null, data: null });
+                                }}
+                            >
+                                Taip
+                            </button>
+                            <button className="btn btn-secondary" onClick={() => setModal({ type: null, data: null })}>
+                                Atšaukti
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </main>
     );
 }

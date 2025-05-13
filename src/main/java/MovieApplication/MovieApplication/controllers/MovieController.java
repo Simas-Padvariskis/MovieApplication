@@ -115,16 +115,21 @@ public class MovieController {
     //Delete movie by id
     @DeleteMapping("/{movieId}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<String> deleteMovie(@PathVariable Long movieId){
+    public ResponseEntity<Map<String, Object>> deleteMovie(@PathVariable Long movieId) {
         Movie theMovie = movieService.findById(movieId);
 
-        if(theMovie == null){
+        if (theMovie == null) {
             return ResponseEntity.notFound().build();
         }
 
         movieService.deleteById(movieId);
 
-        return ResponseEntity.ok("Deleted movie with id - " + movieId);
+        // Return a proper JSON response
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("status", "success");
+        response.put("message", "Deleted movie with id - " + movieId);
+
+        return ResponseEntity.ok(response);
     }
 
     //Update movie object

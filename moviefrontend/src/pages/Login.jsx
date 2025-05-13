@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/user/user.scss';
 import { useLoading } from '../context/LoadingContext';
-import { login } from '../services/AuthServices';
+import { useAuth } from '../context/AuthContext';
 
 function Login() {
   const { setLoading } = useLoading();
@@ -12,6 +12,7 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth(); 
 
   useEffect(() => {
     document.title = 'Prisijungimas';
@@ -23,7 +24,6 @@ function Login() {
     setLoading(true);
     setError(null);
 
-    // Minimali klientinė validacija
     if (!email.trim() || !password.trim()) {
       setError('Prašome užpildyti visus laukus.');
       setIsLoading(false);
@@ -32,10 +32,10 @@ function Login() {
     }
 
     try {
-      await login(email, password);
+      await login(email, password); // uses context, which updates accessToken in state
       navigate('/dashboard');
     } catch (err) {
-        setError(err.message);
+      setError(err.message);
     } finally {
       setIsLoading(false);
       setLoading(false);
