@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,9 +29,10 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<Movie> findAll() {
-        return movieRepository.findAll();
+    public Page<Movie> findAll(Pageable pageable) {
+        return movieRepository.findAll(pageable);
     }
+
 
     @Override
     public Movie findById(Long id) {
@@ -72,5 +75,9 @@ public class MovieServiceImpl implements MovieService {
         user.setId(userDetails.getId());
 
         return movieRepository.getMoviesByUser(user);
+    }
+
+    public Page<Movie> findByTitleContaining(String title, Pageable pageable) {
+        return movieRepository.findByTitleContainingIgnoreCase(title, pageable);
     }
 }

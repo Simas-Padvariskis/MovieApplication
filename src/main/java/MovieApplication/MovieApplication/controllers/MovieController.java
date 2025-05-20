@@ -3,6 +3,7 @@ package MovieApplication.MovieApplication.controllers;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 
+import MovieApplication.MovieApplication.config.PaginationProperties;
 import MovieApplication.MovieApplication.dao.CategoryRepository;
 import MovieApplication.MovieApplication.dto.movieDTO.MovieCreateDTO;
 import MovieApplication.MovieApplication.dto.movieDTO.MovieResponseDTO;
@@ -21,6 +22,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.*;
+
 
 import java.util.List;
 import java.util.Map;
@@ -33,29 +36,64 @@ import java.util.stream.Collectors;
 public class MovieController {
     private MovieService movieService;
     private CategoryRepository categoryRepository;
+    private PaginationProperties paginationProperties;
     private ObjectMapper objectMapper;
 
     @Autowired
     public MovieController(MovieService movieService, ObjectMapper objectMapper, CategoryRepository categoryRepository) {
         this.movieService = movieService;
         this.objectMapper = objectMapper;
+        this.paginationProperties = new PaginationProperties();
         this.categoryRepository = categoryRepository;
     }
 
-    //Return all movies
-    @GetMapping
-    public ResponseEntity<Map<String, Object>> findAll(){
-        List<MovieResponseDTO> movies;
+//    //Return all movies
+//    @GetMapping
+//    public ResponseEntity<Map<String, Object>> findAll(){
+//        List<MovieResponseDTO> movies;
+//
+//        movies = movieService.findAll()
+//                .stream()
+//                .map(MovieMapper::toResponseDTO)
+//                .collect(Collectors.toList());
+//
+//        Map<String, Object> response = new LinkedHashMap<>();
+//            response.put("status", "success");
+//            response.put("results", movies.size());
+//            response.put("data", movies);
+//
+//        return ResponseEntity.ok(response);
+//    }
 
-        movies = movieService.findAll()
-                .stream()
+    // Get all paginated movies
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir,
+            @RequestParam(required = false) String search
+    ) {
+        Sort sort = sortDir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Movie> moviePage;
+
+        if (search != null && !search.isEmpty()) {
+            moviePage = movieService.findByTitleContaining(search, pageable);
+        } else {
+            moviePage = movieService.findAll(pageable);
+        }
+
+        List<MovieResponseDTO> movies = moviePage.getContent().stream()
                 .map(MovieMapper::toResponseDTO)
                 .collect(Collectors.toList());
 
-        Map<String, Object> response = new LinkedHashMap<>();
-            response.put("status", "success");
-            response.put("results", movies.size());
-            response.put("data", movies);
+        Map<String, Object> response = Map.of(
+                "status", "success",
+                "results", moviePage.getTotalElements(),
+                "data", movies
+        );
 
         return ResponseEntity.ok(response);
     }
