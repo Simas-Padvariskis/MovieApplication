@@ -8,16 +8,33 @@ const EditMovieModal = ({ movie, onSave, onClose }) => {
         category_id: ''
     });
 
+    const [categories, setCategories] = useState([]);
+
     useEffect(() => {
         if (movie) {
             setFormData({
                 title: movie.title || '',
                 description: movie.description || '',
                 imdb_rating: movie.imdb_rating || '',
-                category_id: movie.category || ''
+                category_id: movie.category?.id || ''
             });
         }
     }, [movie]);
+
+    // Fetch categories
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await fetch('http://localhost:8080/api/v1/categories');
+                const data = await res.json();
+                setCategories(data.data);  // Assumes { data: [...] }
+            } catch (err) {
+                console.error('Failed to load categories:', err);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -54,13 +71,19 @@ const EditMovieModal = ({ movie, onSave, onClose }) => {
                         value={formData.imdb_rating}
                         onChange={handleChange}
                     />
-                    <label>Kategorijos ID</label>
-                    <input
-                        type="number"
+                    <label>Kategorija</label>
+                    <select
                         name="category_id"
                         value={formData.category_id}
                         onChange={handleChange}
-                    />
+                    >
+                        <option value="">-- Pasirinkti kategoriją --</option>
+                        {categories.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                                {cat.title}
+                            </option>
+                        ))}
+                    </select>
                     <div className="actions">
                         <button type="submit" className="btn btn-primary">Išsaugoti</button>
                         <button type="button" className="btn btn-secondary" onClick={onClose}>Atšaukti</button>
