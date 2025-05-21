@@ -72,8 +72,8 @@ export const getCategoryById = async (id, accessToken) => {
 //     return fetchRequest(`/movies/${id}`, { method: 'POST', body: JSON.stringify(movieData) }, accessToken);
 // };
 
-// // Ištrina konkursą +
-// export const deleteMovie = async (id, accessToken) => {
-//     const response = await fetchRequest(`/movies/${id}`, { method: 'DELETE' }, accessToken);
-//     return response.movie || null;
-// };
+// Ištrina konkursą +
+export const deleteCategory = async (id, accessToken) => {
+    const response = await fetchRequest(`/categories/${id}`, { method: 'DELETE' }, accessToken);
+    return response.category || null;
+};

@@ -101,16 +101,20 @@ public class CategoryController {
     //Delete category by id
     @DeleteMapping("/{categoryId}")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId){
+    public ResponseEntity<Map<String, Object>> deleteCategory(@PathVariable Long categoryId) {
         Category theCategory = categoryService.findById(categoryId);
 
-        if(theCategory == null){
+        if (theCategory == null) {
             return ResponseEntity.notFound().build();
         }
 
         categoryService.deleteById(categoryId);
 
-        return ResponseEntity.ok("Deleted category with id - " + categoryId);
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("status", "success");
+        response.put("message", "Deleted category with id - " + categoryId);
+
+        return ResponseEntity.ok(response);
     }
 
     //Update category object

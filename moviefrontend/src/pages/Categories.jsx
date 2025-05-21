@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCategories } from '../context/CategoryContext';
 import { useLoading } from '../context/LoadingContext';
+import { deleteCategory } from '../services/CategoryServices';
 import CategoryDetails from '../components/CategoryDetails';
 
 function Categories() {
@@ -55,6 +56,16 @@ function Categories() {
         }
     };
 
+    const handleDeleteCategory = async (categoryId) => {
+            try {
+                await deleteCategory(categoryId, accessToken);
+                setCategories((prev) => prev.filter((category) => category.id !== categoryId));
+                setSuccess(true);
+            } catch (err) {
+                setError(`Nepavyko ištrinti kategorijos: ${err.message}`);
+            }
+        };
+
     const handleLogout = () => {
         setLoading(true);
         logout();
@@ -105,6 +116,30 @@ function Categories() {
                     </div>
                 </div>
             </div>
+
+            {/* Modal window for deleting a category           */}
+            {modal.type === 'delete' && (
+                <div className="modal-backdrop">
+                    <div className="modal-content bg-white p-4 rounded shadow">
+                        <h5>Ar tikrai norite ištrinti kategoriją „{modal.data.title}“?</h5>
+                        <div className="mt-3 d-flex gap-2">
+                            <button
+                                className="btn btn-danger"
+                                onClick={() => {
+                                    handleDeleteCategory(modal.data.id);
+                                    setModal({ type: null, data: null });
+                                }}
+                            >
+                                Taip
+                            </button>
+                            <button className="btn btn-secondary" onClick={() => setModal({ type: null, data: null })}>
+                                Atšaukti
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}            
+
         </main>
     );
 }
