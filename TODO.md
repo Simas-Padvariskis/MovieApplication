@@ -1,3 +1,3 @@
 # TODO List
 
-- [ ] Add proper Category seletion on Edit Movie window
+- [ ] Create delete and edit in Category frontend
