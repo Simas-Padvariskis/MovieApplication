@@ -69,7 +69,7 @@ public class MovieController {
     @GetMapping
     public ResponseEntity<Map<String, Object>> findAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir,
             @RequestParam(required = false) String search

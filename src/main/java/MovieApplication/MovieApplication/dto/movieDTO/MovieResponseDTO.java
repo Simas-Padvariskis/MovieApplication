@@ -8,7 +8,7 @@ public class MovieResponseDTO {
     private String title;
     private String description;
     private Double imdb_rating;
-    private Long category_id;
+    private String category;
     private Long user_id;
     private LocalDateTime created_at;
     private LocalDateTime updated_at;
@@ -45,12 +45,12 @@ public class MovieResponseDTO {
         this.imdb_rating = imdb_rating;
     }
 
-    public Long getCategory_id() {
-        return category_id;
+    public String getCategory() {
+        return category;
     }
 
-    public void setCategory_id(Long category_id) {
-        this.category_id = category_id;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public Long getUser_id() {

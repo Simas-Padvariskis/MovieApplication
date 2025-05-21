@@ -23,7 +23,7 @@ public class MovieMapper {
         dto.setTitle(entity.getTitle());
         dto.setDescription(entity.getDescription());
         dto.setImdb_rating(entity.getImdb_rating());
-        dto.setCategory_id(entity.getCategory().getId());
+        dto.setCategory(entity.getCategory().getTitle());
         dto.setUser_id(entity.getUser().getId());
         dto.setCreated_at(entity.getCreated_at());
         dto.setUpdated_at(entity.getUpdated_at());

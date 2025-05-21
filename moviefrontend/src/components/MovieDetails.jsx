@@ -7,7 +7,7 @@ const MovieDetails = ({ movie, onEdit, onDelete }) => {
                     <p className="card-text">
                         <strong>Aprašymas:</strong> {movie.description || 'Nėra aprašymo'}<br />
                         <strong>IMDB reitingas:</strong> {movie.imdb_rating || 'Nėra IMDB reitingo'}<br />
-                        <strong>Kategorija:</strong> {movie.category_id || 'Nėra kategorijos'}<br />
+                        <strong>Kategorija:</strong> {movie.category || 'Nėra kategorijos'}<br />
                     </p>
                     <div className="card-actions">
                         {/* Removed the undefined onTasks */}
