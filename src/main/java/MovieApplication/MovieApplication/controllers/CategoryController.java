@@ -127,8 +127,15 @@ public class CategoryController {
             return ResponseEntity.notFound().build();
         }
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        User user = new User(userDetails.getUsername(), userDetails.getEmail(), userDetails.getPassword());
+        user.setId(userDetails.getId());
+
         Category updatedCategory = CategoryMapper.toEntity(category);
         updatedCategory.setId(categoryId);
+        updatedCategory.setUser(user);  // Set current User
 
         Category saved = categoryService.save(updatedCategory);
 

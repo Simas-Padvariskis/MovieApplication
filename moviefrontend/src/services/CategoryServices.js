@@ -67,10 +67,22 @@ export const getCategoryById = async (id, accessToken) => {
 //     return fetchRequest('/movies', { method: 'POST', body: JSON.stringify(movieData) }, accessToken);
 // };
 
-// // Atnaujina konkursą +
-// export const updateMovie = async (id, movieData, accessToken) => {
-//     return fetchRequest(`/movies/${id}`, { method: 'POST', body: JSON.stringify(movieData) }, accessToken);
-// };
+// Atnaujina konkursą +
+export async function updateCategory(id, updatedCategory, accessToken) {
+  const response = await fetch(`http://localhost:8080/api/v1/categories/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,  // <-- token here
+    },
+    body: JSON.stringify(updatedCategory),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update category');
+  }
+  return response.json();
+}
 
 // Ištrina konkursą +
 export const deleteCategory = async (id, accessToken) => {

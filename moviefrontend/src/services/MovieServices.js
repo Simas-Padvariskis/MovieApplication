@@ -67,7 +67,7 @@ export async function updateMovie(id, updatedMovie, accessToken) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}}`,  // <-- token here
+      'Authorization': `Bearer ${accessToken}`,  // <-- token here
     },
     body: JSON.stringify(updatedMovie),
   });

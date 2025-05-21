@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { useCategories } from '../context/CategoryContext';
 import { useLoading } from '../context/LoadingContext';
 import { deleteCategory } from '../services/CategoryServices';
+import { updateCategory } from '../services/CategoryServices';
+import EditCategoryModal from '../components/EditCategoryModal';
 import CategoryDetails from '../components/CategoryDetails';
 
 function Categories() {
@@ -46,7 +48,7 @@ function Categories() {
         setLoading(true);
         setError(null);
         try {
-            const data = await getCategories();
+            const data = await getCategories(accessToken);
             console.log('Categories data:', data); // Log the response
             setCategories(Array.isArray(data) ? data : []); // Make sure it's always an array
         } catch (err) {
@@ -97,7 +99,7 @@ function Categories() {
 
                 <div className="main-content">
                     <div className="container-fluid p-5">
-                        <h1 className="title">Filmų sąrašas</h1>
+                        <h1 className="title">Kategorijų sąrašas</h1>
                         {/* Safe rendering: Ensure categories is always an array */}
                         {Array.isArray(categories) && categories.length > 0 ? (
                             <div className="row row-cols-1 row-cols-md-2 g-4">
@@ -117,7 +119,7 @@ function Categories() {
                 </div>
             </div>
 
-            {/* Modal window for deleting a category           */}
+            {/* Modal window for deleting category           */}
             {modal.type === 'delete' && (
                 <div className="modal-backdrop">
                     <div className="modal-content bg-white p-4 rounded shadow">
@@ -139,6 +141,31 @@ function Categories() {
                     </div>
                 </div>
             )}            
+            
+            {/* Modal window for editing a movie             */}
+            {modal.type === 'update' && (
+                <EditCategoryModal
+                    category={modal.data}
+                    onSave={async (updatedCategory) => {
+                        try {
+                            setLoading(true);
+                                       
+                            await updateCategory(updatedCategory.id, updatedCategory, accessToken);
+                                       
+                            setCategories((prevCategories) =>
+                                prevCategories.map((m) => (m.id === updatedCategory.id ? updatedCategory : m))
+                            );
+                            setSuccess(true);
+                        } catch (err) {
+                                        setError(`Nepavyko atnaujinti filmo: ${err.message}`);
+                        } finally {
+                            setLoading(false);
+                            setModal({ type: null, data: null });
+                        }
+                    }}
+                    onClose={() => setModal({ type: null, data: null })}
+                    />
+                )}
 
         </main>
     );
