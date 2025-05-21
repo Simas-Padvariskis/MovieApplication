@@ -1,3 +1,3 @@
 # TODO List
 
-- [ ] Create movie editing window for editing a movie (onEdit(movie))
+- [ ] Add proper Category seletion on Edit Movie window
