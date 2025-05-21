@@ -62,9 +62,22 @@ export const createMovie = async (movieData, accessToken) => {
 };
 
 // Atnaujina konkursą +
-export const updateMovie = async (id, movieData, accessToken) => {
-    return fetchRequest(`/movies/${id}`, { method: 'POST', body: JSON.stringify(movieData) }, accessToken);
-};
+export async function updateMovie(id, updatedMovie, accessToken) {
+  const response = await fetch(`http://localhost:8080/api/v1/movies/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}}`,  // <-- token here
+    },
+    body: JSON.stringify(updatedMovie),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update movie');
+  }
+  return response.json();
+}
+
 
 // Ištrina konkursą +
 export const deleteMovie = async (id, accessToken) => {

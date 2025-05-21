@@ -138,7 +138,7 @@ public class MovieController {
 
         Movie movie = MovieMapper.toEntity(movieCreateDTO);
 
-        movie.setUser(user); // Set the required Movie
+        movie.setUser(user); // Set the required User
 
         Category category = categoryRepository.findById(movieCreateDTO.getCategory_id())
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + movieCreateDTO.getCategory_id()));
@@ -180,8 +180,15 @@ public class MovieController {
             return ResponseEntity.notFound().build();
         }
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        User user = new User(userDetails.getUsername(), userDetails.getEmail(), userDetails.getPassword());
+        user.setId(userDetails.getId());
+
         Movie updatedMovie = MovieMapper.toEntity(movie);
         updatedMovie.setId(movieId);
+        updatedMovie.setUser(user);  // Set current User
 
         Category category = categoryRepository.findById(movie.getCategory_id())
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + movie.getCategory_id()));

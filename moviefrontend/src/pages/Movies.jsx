@@ -4,8 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useMovies } from '../context/MovieContext';
 import { deleteMovie } from '../services/MovieServices';
+import { updateMovie } from '../services/MovieServices';
 import { useLoading } from '../context/LoadingContext';
 import MovieDetails from '../components/MovieDetails';
+import EditMovieModal from '../components/EditMovieModal';
 
 function Movies() {
     const { accessToken, logout } = useAuth();
@@ -24,9 +26,9 @@ function Movies() {
     useEffect(() => {
         document.title = 'Movie Application - Filmų sąrašas';
 
-        const token = localStorage.getItem('jwtToken');  // Fallback to localStorage
+        const accessToken = localStorage.getItem('jwtToken');  // Fallback to localStorage
 
-        if (!token) {
+        if (!accessToken) {
             navigate('/login');
         } else {
             fetchMovies();
@@ -140,6 +142,32 @@ function Movies() {
                     </div>
                 </div>
             )}
+            
+            {/* Modal window for editing a movie             */}
+            {modal.type === 'update' && (
+                <EditMovieModal
+                    movie={modal.data}
+                    onSave={async (updatedMovie) => {
+                        try {
+                            setLoading(true);
+                           
+                            await updateMovie(updatedMovie.id, updatedMovie, accessToken);
+                           
+                            setMovies((prevMovies) =>
+                                prevMovies.map((m) => (m.id === updatedMovie.id ? updatedMovie : m))
+                            );
+                            setSuccess(true);
+                        } catch (err) {
+                            setError(`Nepavyko atnaujinti filmo: ${err.message}`);
+                        } finally {
+                            setLoading(false);
+                            setModal({ type: null, data: null });
+                        }
+                    }}
+                    onClose={() => setModal({ type: null, data: null })}
+                />
+            )}
+
 
         </main>
     );
