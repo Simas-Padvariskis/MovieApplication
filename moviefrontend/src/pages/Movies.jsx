@@ -20,6 +20,7 @@ function Movies() {
     const [success, setSuccess] = useState(false);
     const [modal, setModal] = useState({ type: null, data: null });
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('Visos'); 
     
     const openModal = (type, data) => {
         setModal({ type, data });
@@ -54,6 +55,7 @@ function Movies() {
             const data = await getMovies();
             console.log('Movies data:', data); // Log the response
             setMovies(Array.isArray(data) ? data : []); // Make sure it's always an array
+            const categories = ['All', ...new Set(movies.map((movie) => movie.category))];
         } catch (err) {
             setError(`Klaida: ${err.message}`);
         } finally {
@@ -61,9 +63,12 @@ function Movies() {
         }
     };
 
-    const filteredMovies = movies.filter((movie) =>
-        movie.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredMovies = movies.filter((movie) => {
+        const titleMatch = movie.title?.toLowerCase().includes(searchTerm.toLowerCase());
+        const categoryMatch =
+            selectedCategory === 'Visos' || movie.category === selectedCategory;
+        return titleMatch && categoryMatch;
+    });
 
 
     const handleDeleteMovie = async (movieId) => {
@@ -108,14 +113,33 @@ function Movies() {
                 <div className="main-content">
                     <div className="container-fluid p-5">
                         <h1 className="title">Filmų sąrašas</h1>
-                        <div className="mb-3">
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Ieškoti pagal pavadinimą..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
+                        <div className="mb-3 d-flex gap-4 flex-wrap align-items-end">
+                            <div className="d-flex flex-column">
+                                <label className="form-label">Ieškoti pagal pavadinimą     </label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    style={{ maxWidth: '300px' }}
+                                    placeholder="Įveskite pavadinimą..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                            <div className="d-flex flex-column">
+                                <label className="form-label">Ieškoti pagal kategoriją     </label>
+                                <select
+                                    className="form-select"
+                                    style={{ maxWidth: '200px' }}
+                                    value={selectedCategory}
+                                    onChange={(e) => setSelectedCategory(e.target.value)}
+                                >
+                                    {['Visos', ...new Set(movies.map((movie) => movie.category))].map((category) => (
+                                        <option key={category} value={category}>
+                                            {category}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
                         <button
                             className="btn btn-primary mb-3"
