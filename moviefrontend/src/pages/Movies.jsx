@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useMovies } from '../context/MovieContext';
 import { deleteMovie } from '../services/MovieServices';
 import { updateMovie } from '../services/MovieServices';
+import { createMovie } from '../services/MovieServices';
 import { useLoading } from '../context/LoadingContext';
 import MovieDetails from '../components/MovieDetails';
 import EditMovieModal from '../components/EditMovieModal';
@@ -101,6 +102,12 @@ function Movies() {
                 <div className="main-content">
                     <div className="container-fluid p-5">
                         <h1 className="title">Filmų sąrašas</h1>
+                        <button
+                            className="btn btn-primary mb-3"
+                            onClick={() => openModal('create', null)}
+                            >
+                            Pridėti Filmą
+                        </button>
                         {/* Safe rendering: Ensure movies is always an array */}
                         {Array.isArray(movies) && movies.length > 0 ? (
                             <div className="row row-cols-1 row-cols-md-2 g-4">
@@ -120,7 +127,7 @@ function Movies() {
                 </div>
             </div>
 
-            {/* Modal window for deleting a movie             */}
+            {/* Modal window for deleting a movie*/}
             {modal.type === 'delete' && (
                 <div className="modal-backdrop">
                     <div className="modal-content bg-white p-4 rounded shadow">
@@ -143,7 +150,7 @@ function Movies() {
                 </div>
             )}
             
-            {/* Modal window for editing a movie             */}
+            {/* Modal window for editing a movie*/}
             {modal.type === 'update' && (
                 <EditMovieModal
                     movie={modal.data}
@@ -159,6 +166,27 @@ function Movies() {
                             setSuccess(true);
                         } catch (err) {
                             setError(`Nepavyko atnaujinti filmo: ${err.message}`);
+                        } finally {
+                            setLoading(false);
+                            setModal({ type: null, data: null });
+                        }
+                    }}
+                    onClose={() => setModal({ type: null, data: null })}
+                />
+            )}
+
+            {/* Modal window for creating a new movie */}
+            {modal.type === 'create' && (
+                <EditMovieModal
+                    movie={null}
+                    onSave={async (newMovie) => {
+                        try {
+                            setLoading(true);
+                            const createdMovie = await createMovie(newMovie, accessToken);
+                            setMovies((prevMovies) => [...prevMovies, createdMovie]);
+                            setSuccess(true);
+                        } catch (err) {
+                            setError(`Nepavyko sukurti filmo: ${err.message}`);
                         } finally {
                             setLoading(false);
                             setModal({ type: null, data: null });

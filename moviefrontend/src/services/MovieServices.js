@@ -57,8 +57,21 @@ export const getMovieById = async (id, accessToken) => {
 };
 
 // Sukuria naują konkursą +
-export const createMovie = async (movieData, accessToken) => {
-    return fetchRequest('/movies', { method: 'POST', body: JSON.stringify(movieData) }, accessToken);
+export const createMovie = async (movieData, token) => {
+  const response = await fetch('http://localhost:8080/api/v1/movies', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(movieData),
+  });
+
+  if (!response.ok) {
+    throw new Error('Nepavyko sukurti filmo');
+  }
+
+  return await response.json();
 };
 
 // Atnaujina konkursą +
