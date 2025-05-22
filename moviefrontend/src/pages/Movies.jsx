@@ -19,6 +19,7 @@ function Movies() {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const [modal, setModal] = useState({ type: null, data: null });
+    const [searchTerm, setSearchTerm] = useState('');
     
     const openModal = (type, data) => {
         setModal({ type, data });
@@ -59,6 +60,11 @@ function Movies() {
             setLoading(false);
         }
     };
+
+    const filteredMovies = movies.filter((movie) =>
+        movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
 
     const handleDeleteMovie = async (movieId) => {
         try {
@@ -102,6 +108,15 @@ function Movies() {
                 <div className="main-content">
                     <div className="container-fluid p-5">
                         <h1 className="title">Filmų sąrašas</h1>
+                        <div className="mb-3">
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Ieškoti pagal pavadinimą..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
                         <button
                             className="btn btn-primary mb-3"
                             onClick={() => openModal('create', null)}
@@ -109,9 +124,9 @@ function Movies() {
                             Pridėti Filmą
                         </button>
                         {/* Safe rendering: Ensure movies is always an array */}
-                        {Array.isArray(movies) && movies.length > 0 ? (
+                        {Array.isArray(filteredMovies) && filteredMovies.length > 0 ? (
                             <div className="row row-cols-1 row-cols-md-2 g-4">
-                                {movies.map((movie) => (
+                                {filteredMovies.map((movie) => (
                                     <MovieDetails
                                         key={movie.id}
                                         movie={movie}
@@ -121,7 +136,7 @@ function Movies() {
                                 ))}
                             </div>
                         ) : (
-                            <p>Nėra Filmų.</p>
+                            <p>Filmas nerastas.</p>
                         )}
                     </div>
                 </div>
