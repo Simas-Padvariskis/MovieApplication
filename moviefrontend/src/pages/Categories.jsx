@@ -5,6 +5,7 @@ import { useCategories } from '../context/CategoryContext';
 import { useLoading } from '../context/LoadingContext';
 import { deleteCategory } from '../services/CategoryServices';
 import { updateCategory } from '../services/CategoryServices';
+import { createCategory } from '../services/CategoryServices';
 import EditCategoryModal from '../components/EditCategoryModal';
 import CategoryDetails from '../components/CategoryDetails';
 
@@ -100,6 +101,12 @@ function Categories() {
                 <div className="main-content">
                     <div className="container-fluid p-5">
                         <h1 className="title">Kategorijų sąrašas</h1>
+                        <button
+                            className="btn btn-primary mb-3"
+                            onClick={() => openModal('create', null)}
+                            >
+                            Pridėti Kategoriją
+                        </button>
                         {/* Safe rendering: Ensure categories is always an array */}
                         {Array.isArray(categories) && categories.length > 0 ? (
                             <div className="row row-cols-1 row-cols-md-2 g-4">
@@ -119,7 +126,7 @@ function Categories() {
                 </div>
             </div>
 
-            {/* Modal window for deleting category           */}
+            {/* Modal window for deleting category*/}
             {modal.type === 'delete' && (
                 <div className="modal-backdrop">
                     <div className="modal-content bg-white p-4 rounded shadow">
@@ -142,7 +149,7 @@ function Categories() {
                 </div>
             )}            
             
-            {/* Modal window for editing a movie             */}
+            {/* Modal window for editing category*/}
             {modal.type === 'update' && (
                 <EditCategoryModal
                     category={modal.data}
@@ -164,6 +171,27 @@ function Categories() {
                         }
                     }}
                     onClose={() => setModal({ type: null, data: null })}
+                    />
+                )}
+
+                {/* Modal window for creating a new category */}
+                {modal.type === 'create' && (
+                    <EditCategoryModal
+                        category={null}
+                        onSave={async (newCategory) => {
+                            try {
+                                setLoading(true);
+                                const createdCategory = await createCategory(newCategory, accessToken);
+                                setCategories((prevCategories) => [...prevCategories, createdCategory]);
+                                setSuccess(true);
+                            } catch (err) {
+                                setError(`Nepavyko sukurti kategorijos: ${err.message}`);
+                            } finally {
+                                setLoading(false);
+                                setModal({ type: null, data: null });
+                            }
+                        }}
+                        onClose={() => setModal({ type: null, data: null })}
                     />
                 )}
 

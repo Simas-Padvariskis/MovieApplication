@@ -23,13 +23,13 @@ const EditCategoryModal = ({ category, onSave, onClose }) => {
             alert('Pavadinimas negali būti tuščias');
             return;
         }
-        onSave({ ...category, ...formData });
+        onSave({ ...(category || {}), ...formData });
     };
 
     return (
         <div className="edit-modal-backdrop">
             <div className="edit-modal-content">
-                <h5>Redaguoti kategoriją</h5>
+                <h5>{category ? 'Redaguoti kategoriją' : 'Pridėti kategoriją'}</h5>
                 <form onSubmit={handleSubmit} className="edit-form">
                     <label>Pavadinimas</label>
                     <input

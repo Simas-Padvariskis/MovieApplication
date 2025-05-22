@@ -63,9 +63,22 @@ export const getCategoryById = async (id, accessToken) => {
 };
 
 // // Sukuria naują konkursą +
-// export const createMovie = async (movieData, accessToken) => {
-//     return fetchRequest('/movies', { method: 'POST', body: JSON.stringify(movieData) }, accessToken);
-// };
+export const createCategory = async (categoryData, token) => {
+  const response = await fetch('http://localhost:8080/api/v1/categories', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(categoryData),
+  });
+
+  if (!response.ok) {
+    throw new Error('Nepavyko sukurti categorijos');
+  }
+
+  return await response.json();
+};
 
 // Atnaujina konkursą +
 export async function updateCategory(id, updatedCategory, accessToken) {
